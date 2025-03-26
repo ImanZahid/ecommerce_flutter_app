@@ -1,11 +1,11 @@
 import 'package:ecommerce_flutter_app/domain/shopping/dress_model.dart';
 import 'package:ecommerce_flutter_app/pages/shopping/dress_detail_page.dart';
+import 'package:ecommerce_flutter_app/pages/shopping/cart_page.dart'; // <-- make sure this import exists
 import 'package:flutter/material.dart';
 
 class DressShopPage extends StatefulWidget {
   DressShopPage({super.key});
 
-  //grab this from the DB later, the paths too!
   final List<DressModel> dresses = [
     DressModel(name: "Red Gown", image: "assets/images/surprise.gif", price: 49.99, quantity: 10),
     DressModel(name: "Blue Dress", image: "assets/images/surprise.gif", price: 39.99, quantity: 10),
@@ -20,6 +20,16 @@ class DressShopPage extends StatefulWidget {
 
 class _DressShopPageState extends State<DressShopPage> {
   Map<int, bool> hoverStates = {};
+  List<DressModel> cart = [];
+
+  void addToCart(DressModel dress) {
+    setState(() {
+      cart.add(dress);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("${dress.name} added to cart!")),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +39,40 @@ class _DressShopPageState extends State<DressShopPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.shopping_cart),
+            icon: Stack(
+              children: [
+                const Icon(Icons.shopping_cart),
+                if (cart.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        "${cart.length}",
+                        style: const TextStyle(fontSize: 12, color: Colors.white),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Cart functionality coming soon!")),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CartPage(
+                    cartItems: cart,
+                    onPurchase: () {
+                      setState(() {
+                        cart.clear();
+                      });
+                    },
+                  ),
+                ),
               );
             },
           ),
@@ -55,7 +95,10 @@ class _DressShopPageState extends State<DressShopPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DressDetailPage(dress: dress),
+                    builder: (context) => DressDetailPage(
+                      dress: dress,
+                      onAddToCart: addToCart,
+                    ),
                   ),
                 );
               },
@@ -87,7 +130,8 @@ class _DressShopPageState extends State<DressShopPage> {
                                   : Container(
                                       width: double.infinity,
                                       color: Colors.grey[300],
-                                      child: const Center(child: Icon(Icons.image, size: 50, color: Colors.grey)),
+                                      child: const Center(
+                                          child: Icon(Icons.image, size: 50, color: Colors.grey)),
                                     ),
                             ),
                           ),
@@ -116,7 +160,9 @@ class _DressShopPageState extends State<DressShopPage> {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                               backgroundColor: Colors.blueAccent,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              addToCart(dress);
+                            },
                             child: const Text("Buy Now", style: TextStyle(color: Colors.white)),
                           ),
                         ),
@@ -133,7 +179,6 @@ class _DressShopPageState extends State<DressShopPage> {
     );
   }
 
-  // Handle hover effect for each item
   void onHover(int index, bool isHovered) {
     setState(() {
       hoverStates[index] = isHovered;
