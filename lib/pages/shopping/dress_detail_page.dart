@@ -1,12 +1,15 @@
 import 'package:ecommerce_flutter_app/domain/shopping/dress_model.dart';
 import 'package:flutter/material.dart';
 
-//for AHMET to design and fix - just a dummy page
-
 class DressDetailPage extends StatelessWidget {
   final DressModel dress;
+  final void Function(DressModel) onAddToCart;
 
-  const DressDetailPage({super.key, required this.dress});
+  const DressDetailPage({
+    super.key,
+    required this.dress,
+    required this.onAddToCart,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +22,9 @@ class DressDetailPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero Animation for Image Transition
+            // Hero animation for image transition
             Hero(
               tag: dress.name,
               child: ClipRRect(
@@ -33,8 +37,9 @@ class DressDetailPage extends StatelessWidget {
                 ),
               ),
             ),
-            // Name and Price with Beautiful Styling
-            Padding(
+
+            // Name, price and description
+             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +64,6 @@ class DressDetailPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  // Description or extra details can be added here
                   const Text(
                     "This is an amazing dress. It's perfect for any special occasion, and its comfortable fit makes it ideal for all-day wear. Get yours today!",
                     style: TextStyle(
@@ -69,20 +73,30 @@ class DressDetailPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 30),
+
                   // Add to Cart Button
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Added to cart!")),
-                      );
-                    },
-                    icon: const Icon(Icons.add_shopping_cart),
-                    label: const Text("Add to Cart"),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      textStyle: const TextStyle(fontSize: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        onAddToCart(dress);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("${dress.name} added to cart!"),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.add_shopping_cart),
+                      label: const Text("Add to Cart"),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        textStyle: const TextStyle(fontSize: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        backgroundColor: Colors.pinkAccent,
                       ),
                     ),
                   ),
