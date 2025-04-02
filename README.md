@@ -44,3 +44,12 @@ A modern **cross-platform shopping application** built using [Flutter](https://f
 ```bash
 git clone https://github.com/your-username/ecommerce_flutter_app.git
 cd ecommerce_flutter_app
+```
+#### 4. Run the app
+**Android:**
+```bash
+flutter run
+```
+
+
+
