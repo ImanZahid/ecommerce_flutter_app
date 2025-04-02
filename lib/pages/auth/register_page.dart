@@ -1,3 +1,4 @@
+import 'package:ecommerce_flutter_app/pages/auth/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_flutter_app/domain/user/user_model.dart';
 
@@ -125,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             border:
                                 _selectedProfilePic == index
                                     ? Border.all(color: Colors.blue, width: 2)
-                                    : null, 
+                                    : null,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: ClipRRect(
@@ -249,6 +250,30 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Align(
+                    alignment: Alignment.center,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Already have an account? Login",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
