@@ -17,15 +17,50 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   late List<DressModel> localCart;
+  Map<DressModel, int> itemQuantities = {};
 
   @override
   void initState() {
     super.initState();
-    // Copy incoming cart items to local list for reactivity
     localCart = List.from(widget.cartItems);
+    for (var item in localCart) {
+      itemQuantities[item] = (itemQuantities[item] ?? 0) + 1;
+    }
   }
 
-  double get totalPrice => localCart.fold(0, (sum, item) => sum + item.price);
+  double get totalPrice {
+    double sum = 0;
+    itemQuantities.forEach((item, qty) {
+      sum += item.price * qty;
+    });
+    return sum;
+  }
+
+  void increaseQuantity(DressModel item) {
+    setState(() {
+      itemQuantities[item] = (itemQuantities[item] ?? 0) + 1;
+    });
+  }
+
+  void decreaseQuantity(DressModel item) {
+    setState(() {
+      final currentQty = itemQuantities[item] ?? 1;
+      if (currentQty > 1) {
+        itemQuantities[item] = currentQty - 1;
+      } else {
+        itemQuantities.remove(item);
+        localCart.remove(item);
+      }
+    });
+  }
+
+  void clearCart() {
+    setState(() {
+      localCart.clear();
+      itemQuantities.clear();
+    });
+    widget.onPurchase();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,21 +86,62 @@ class _CartPageState extends State<CartPage> {
                     itemCount: localCart.length,
                     itemBuilder: (context, index) {
                       final item = localCart[index];
-                      return ListTile(
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            item.image,
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        title: Text(item.name),
-                        subtitle: const Text("Color: -"),
-                        trailing: Text(
-                          "\$${item.price.toStringAsFixed(2)}",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                      final quantity = itemQuantities[item] ?? 1;
+                      final itemTotal = item.price * quantity;
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.asset(
+                                item.image,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(item.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                  const SizedBox(height: 4),
+                                  const Text("Color: -", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  "\$${itemTotal.toStringAsFixed(2)}",
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () => decreaseQuantity(item),
+                                      icon: const Icon(Icons.remove_circle_outline),
+                                      iconSize: 20,
+                                    ),
+                                    Text(
+                                      quantity.toString(),
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    IconButton(
+                                      onPressed: () => increaseQuantity(item),
+                                      icon: const Icon(Icons.add_circle_outline),
+                                      iconSize: 20,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       );
                     },
@@ -84,12 +160,7 @@ class _CartPageState extends State<CartPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Clear both local and main cart
-                    setState(() {
-                      localCart.clear();
-                    });
-                    widget.onPurchase(); // Clear main cart
-
+                    clearCart();
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
