@@ -35,13 +35,15 @@ class _DressShopPageState extends State<DressShopPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Dress Shop", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text("Dress Shop", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: const Color.fromARGB(255, 161, 25, 240),
         centerTitle: true,
+        elevation: 10,
         actions: [
           IconButton(
             icon: Stack(
               children: [
-                const Icon(Icons.shopping_cart),
+                const Icon(Icons.shopping_cart, color: Colors.white,),
                 if (cart.isNotEmpty)
                   Positioned(
                     right: 0,
@@ -78,103 +80,134 @@ class _DressShopPageState extends State<DressShopPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          itemCount: widget.dresses.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.80,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [const Color.fromARGB(255, 247, 247, 247), const Color.fromARGB(255, 214, 203, 221)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          itemBuilder: (context, index) {
-            final dress = widget.dresses[index];
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DressDetailPage(
-                      dress: dress,
-                      onAddToCart: addToCart,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GridView.builder(
+            itemCount: widget.dresses.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 1.0,
+            ),
+            itemBuilder: (context, index) {
+              final dress = widget.dresses[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DressDetailPage(
+                        dress: dress,
+                        onAddToCart: addToCart,
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: MouseRegion(
-                onEnter: (_) => onHover(index, true),
-                onExit: (_) => onHover(index, false),
-                child: AnimatedScale(
-                  duration: const Duration(milliseconds: 200),
-                  scale: hoverStates[index] == true ? 1.05 : 1.0,
-                  child: Card(
-                    elevation: hoverStates[index] == true ? 12 : 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                            child: Hero(
-                              tag: dress.name,
-                              child: dress.image.isNotEmpty
-                                  ? Image.asset(
-                                      dress.image,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Container(
-                                      width: double.infinity,
-                                      color: Colors.grey[300],
-                                      child: const Center(
-                                          child: Icon(Icons.image, size: 50, color: Colors.grey)),
-                                    ),
+                  );
+                },
+                child: MouseRegion(
+                  onEnter: (_) => onHover(index, true),
+                  onExit: (_) => onHover(index, false),
+                  child: AnimatedScale(
+                    duration: const Duration(milliseconds: 200),
+                    scale: hoverStates[index] == true ? 1.01 : 1.0,
+                    child: Card(
+                      elevation: hoverStates[index] == true ? 10 : 8,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      color: Colors.white,
+                      shadowColor: Colors.black.withOpacity(0.3),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                              child: Hero(
+                                tag: dress.name,
+                                child: dress.image.isNotEmpty
+                                    ? Image.asset(
+                                        dress.image,
+                                        width: double.infinity,
+                                        fit: BoxFit.fitHeight,
+                                      )
+                                    : Container(
+                                        width: double.infinity,
+                                        color: Colors.grey[300],
+                                        child: const Center(
+                                            child: Icon(Icons.image, size: 50, color: Colors.grey)),
+                                      ),
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
-                          child: Text(
-                            dress.name,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            "\$${dress.price.toStringAsFixed(2)}",
-                            style: TextStyle(fontSize: 14, color: Colors.green[700], fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                              backgroundColor: Colors.blueAccent,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+                            child: Text(
+                              dress.name,
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            onPressed: () {
-                              addToCart(dress);
-                            },
-                            child: const Text("Buy Now", style: TextStyle(color: Colors.white)),
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: Text(
+                              "\$${dress.price.toStringAsFixed(2)}",
+                              style: TextStyle(fontSize: 16, color: Colors.green[700], fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), backgroundColor: Colors.deepOrange,
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                              ),
+                              onPressed: () {
+                                addToCart(dress);
+                              },
+                              child: const Text("Buy Now", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: 0,
+        onTap: (index) {
+          // Handle bottom navigation bar taps
+        },
       ),
     );
   }

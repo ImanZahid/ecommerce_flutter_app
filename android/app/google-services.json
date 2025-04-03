@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:182408837136:android:d7ecc47362e764eb62f295",
+        "mobilesdk_app_id": "1:182408837136:android:89824d78f798633562f295",
         "android_client_info": {
-          "package_name": "com.dressify.ecommerce_shop"
+          "package_name": "com.example.ecommerce_flutter_app"
         }
       },
       "oauth_client": [],
