@@ -137,7 +137,7 @@ class _DressDetailPageState extends State<DressDetailPage> {
                   ),
                   const SizedBox(height: 30),
                   const Text(
-                    "This is an amazing dress. It's perfect for any special occasion, and its comfortable fit makes it ideal for all-day wear. Get yours today!",
+                    "Made from quality materials. Made for people with taste. So get yours today!",
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey,
