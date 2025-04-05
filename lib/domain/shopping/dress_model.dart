@@ -1,8 +1,19 @@
+import 'package:flutter/material.dart';
+
 class DressModel {
   final String name;
-  final String image;
   final double price;
-  final int quantity;
+  final String image;
+  final List<Color> colors;
+  int quantity;
+  final int selectedColorIndex;
 
-  DressModel({required this.name, required this.image, required this.price, required this.quantity});
+  DressModel({
+    required this.name,
+    required this.price,
+    required this.image,
+    required this.quantity,
+    required this.colors,
+    this.selectedColorIndex = 0,
+  }); // Set default selectedColor
 }

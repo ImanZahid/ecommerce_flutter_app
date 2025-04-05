@@ -110,7 +110,22 @@ class _CartPageState extends State<CartPage> {
                                 children: [
                                   Text(item.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                                   const SizedBox(height: 4),
-                                  const Text("Color: -", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                                  const Text(
+                                    "Color:",
+                                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Container(
+                                    width: 16,
+                                    height: 16,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: item.colors.isNotEmpty && item.selectedColorIndex < item.colors.length
+                                        ? item.colors[item.selectedColorIndex]
+                                        : Colors.grey,  // fallback to grey if the index is out of bounds
+                                      border: Border.all(color: Colors.black),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
