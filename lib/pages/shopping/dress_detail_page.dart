@@ -1,4 +1,6 @@
+import 'package:ecommerce_flutter_app/data/rating_data.dart';
 import 'package:ecommerce_flutter_app/domain/shopping/dress_model.dart';
+import 'package:ecommerce_flutter_app/domain/shopping/rating_model.dart';
 import 'package:flutter/material.dart';
 
 class DressDetailPage extends StatefulWidget {
@@ -16,21 +18,94 @@ class DressDetailPage extends StatefulWidget {
 }
 class _DressDetailPageState extends State<DressDetailPage> {
   late final List<Color> colorOptions;
-  
+  int selectedColorIndex = 0;
+  String commentText = '';
+  double selectedStar = 0;
+
   @override
   void initState() {
     super.initState();
     colorOptions = widget.dress.colors;
     }
 
-  int selectedColorIndex = 0;
+  void submitRating() {
+    if (selectedStar > 0 && commentText.isNotEmpty) {
+      setState(() {
+        ratings.add(RatingModel(
+          username: "guest",
+          dressname: widget.dress.name,
+          star: selectedStar,
+          comment: commentText,
+        ));
+        selectedStar = 0;
+        commentText = '';
+      });
+    }
+  }
+  Widget _buildStarInput() {
+    return Row(
+      children: List.generate(5, (index) {
+        return IconButton(
+          icon: Icon(
+            selectedStar > index
+              ? Icons.star
+              : Icons.star_border,
+            color: Colors.amber,
+          ),
+          onPressed: () {
+            setState(() {
+              selectedStar = index + 1;
+            });
+          },
+        );
+      }),
+    );
+    }
+
+  Widget _buildStarDisplay(double rating) {
+    return Row(
+      children: List.generate(5, (index) {
+        final value = index + 1;
+        return Icon(
+          rating >= value
+            ? Icons.star
+            : rating >= value - 0.5
+              ? Icons.star_half
+              : Icons.star_border,
+          color: Colors.amber,
+        );
+      }),
+    );
+  }
+  Widget _buildCommentsList() {
+    final dressRatings = ratings.where((r) => r.dressname == widget.dress.name).toList();
+    return Column(
+      children: dressRatings.map((r) => Card(
+        child: ListTile(
+          title: Row(
+            children: [
+              _buildStarDisplay(r.star),
+              const SizedBox(width: 8),
+              Text(r.username),
+            ],
+          ),
+          subtitle: Text(r.comment),
+        ),
+      ))
+    .toList(),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
+    final dressRatings = ratings.where((r) => r.dressname == widget.dress.name).toList();
+    final double avgRating = dressRatings.isEmpty
+        ? 0
+        : dressRatings.map((r) => r.star).reduce((a, b) => a + b) / dressRatings.length;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Item Details'),
+        foregroundColor: Colors.white,
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 110, 15, 47),
         elevation: 0,
@@ -58,7 +133,6 @@ class _DressDetailPageState extends State<DressDetailPage> {
                     ),
               ),
             ),
-            
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -109,9 +183,8 @@ class _DressDetailPageState extends State<DressDetailPage> {
                 ),
               ],
             ),
-
             // Name, price and description
-             Padding(
+            Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,6 +208,14 @@ class _DressDetailPageState extends State<DressDetailPage> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _buildStarDisplay(avgRating),
+                      const SizedBox(width: 8),
+                      Text("(${dressRatings.length} reviews)"),
+                    ],
+                  ),
                   const SizedBox(height: 30),
                   const Text(
                     "Made from quality materials. Made for people with taste. So get yours today!",
@@ -145,7 +226,6 @@ class _DressDetailPageState extends State<DressDetailPage> {
                     ),
                   ),
                   const SizedBox(height: 30),
-
                   // Add to Cart Button
                   SizedBox(
                     width: double.infinity,
@@ -176,12 +256,42 @@ class _DressDetailPageState extends State<DressDetailPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         backgroundColor: Colors.pinkAccent,
+                        foregroundColor: Colors.white,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
+            const Divider(thickness: 1),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildStarInput(), // New star input widget
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: "Your comment",
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (val) => setState(() => commentText = val),
+                controller: TextEditingController(text: commentText),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ElevatedButton(
+                onPressed: submitRating,
+                child: const Text("Submit Review"),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildCommentsList(),
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
