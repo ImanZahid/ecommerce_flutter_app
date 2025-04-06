@@ -12,7 +12,7 @@ class FirebaseManager {
     );
   }
 
-  Future<void> initalizeFirebaseFirestore() async {
+  Future<void> getFirebaseFirestoreInstance() async {
     firebaseFirestore = FirebaseFirestore.instance;
   }
 }
