@@ -32,8 +32,9 @@ class _DressDetailPageState extends State<DressDetailPage> {
     if (selectedStar > 0 && commentText.isNotEmpty) {
       setState(() {
         ratings.add(RatingModel(
-          username: "guest",
-          dressname: widget.dress.name,
+          userId: "TEMP_4561", //
+          //GRAB THE NAME FROM THE DRESS TABLE
+          dressId: widget.dress.name,
           star: selectedStar,
           comment: commentText,
         ));
@@ -78,7 +79,7 @@ class _DressDetailPageState extends State<DressDetailPage> {
     );
   }
   Widget _buildCommentsList() {
-    final dressRatings = ratings.where((r) => r.dressname == widget.dress.name).toList();
+    final dressRatings = ratings.where((r) => r.dressId == widget.dress.name).toList();
     return Column(
       children: dressRatings.map((r) => Card(
         child: ListTile(
@@ -86,7 +87,7 @@ class _DressDetailPageState extends State<DressDetailPage> {
             children: [
               _buildStarDisplay(r.star),
               const SizedBox(width: 8),
-              Text(r.username),
+              Text(r.userId),
             ],
           ),
           subtitle: Text(r.comment),
@@ -98,7 +99,8 @@ class _DressDetailPageState extends State<DressDetailPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final dressRatings = ratings.where((r) => r.dressname == widget.dress.name).toList();
+    //GRAB THE NAME FROM THE DRESS TABLE
+    final dressRatings = ratings.where((r) => r.dressId == widget.dress.name).toList();
     final double avgRating = dressRatings.isEmpty
         ? 0
         : dressRatings.map((r) => r.star).reduce((a, b) => a + b) / dressRatings.length;
