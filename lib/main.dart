@@ -4,7 +4,7 @@ import 'package:ecommerce_flutter_app/pages/shopping/dress_shop_page.dart';
 import 'package:ecommerce_flutter_app/pages/auth/register_page.dart'; // Import the register page
 
 void main() async {
-  //this is needed first (because runApp runs letter, and that binds all the assets, and bindings are called before)
+  //this is needed first (because runApp runs letter, and that binds all the assets, and bindings are called before - because in the firebase manager class we call currentPlatform)
   WidgetsFlutterBinding.ensureInitialized();
 
   FirebaseManager firebaseManager = FirebaseManager();
