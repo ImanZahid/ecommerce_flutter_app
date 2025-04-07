@@ -1,8 +1,12 @@
+import 'package:ecommerce_flutter_app/firebase/firebase_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_flutter_app/pages/shopping/dress_shop_page.dart';
 import 'package:ecommerce_flutter_app/pages/auth/register_page.dart'; // Import the register page
 
-void main() {
+void main() async {
+  FirebaseManager firebaseManager = FirebaseManager();
+  await firebaseManager.initializeFirebase();
+  
   runApp(const DressShopApp());
 }
 

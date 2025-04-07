@@ -12,6 +12,13 @@ class RatingModel {
     required this.comment,
   });
 
+  factory RatingModel.fromMap(Map<String, dynamic> map) {
+    return RatingModel(userId: map['userId'],
+                      dressId: map['dressId'], 
+                      star: map['star'], 
+                      comment: map['comment']);
+  }
+
   //TODO
   //grab names from the related user and dress tables
   @override

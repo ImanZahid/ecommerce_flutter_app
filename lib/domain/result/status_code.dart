@@ -1,0 +1,4 @@
+enum StatusCode {
+  operationSuccessful,
+  operationFailed
+}
