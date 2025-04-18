@@ -14,8 +14,16 @@ class UserRepository {
       return UserModel.fromMap(user.data()! as Map<String, dynamic>);
   }
 
+  Future<List<UserModel>> getUsers () async {
+    final QuerySnapshot<Map<String, dynamic>> users = await firebaseFirestore.collection('users').get();
+    return users.docs.map((doc) => {
+      UserModel.fromMap(doc.data())
+    }).toList() as List<UserModel>;
+  }
+
   Future<void> createUser(UserModel user) async {
     Object userObject = user.toMap();
     await firebaseFirestore.collection('users').add(userObject as Map<String, dynamic>);
   }
+  
 }
