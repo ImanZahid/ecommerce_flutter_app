@@ -1,6 +1,8 @@
 import 'package:ecommerce_flutter_app/pages/auth/login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_flutter_app/domain/user/user_model.dart';
+import 'package:ecommerce_flutter_app/firebase/firebase_manager.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -25,40 +27,48 @@ class _RegisterPageState extends State<RegisterPage> {
     'assets/images/dinosaur.png',
   ];
 
-  void _register() {
+  void _register() async {
     setState(() => _errorMessage = null);
 
-    if (_usernameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+    final username = _usernameController.text;
+
+    if (username.isEmpty || email.isEmpty || password.isEmpty) {
       setState(() => _errorMessage = "All fields are required");
       return;
     }
 
-    if (!RegExp(
-      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-    ).hasMatch(_emailController.text)) {
-      setState(() => _errorMessage = "Please enter a valid email");
-      return;
+    try {
+      final firebase = FirebaseManager();
+      await firebase.initialize();
+
+      final userCredential = await firebase.auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      await firebase.firestore
+          .collection("users")
+          .doc(userCredential.user!.uid)
+          .set({
+            "username": username,
+            "email": email,
+            "profilePicName":
+                _profilePictures[_selectedProfilePic].split('/').last,
+          });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Registration successful!")));
+      Navigator.pushReplacementNamed(context, '/shop');
+    } on FirebaseAuthException catch (e) {
+      setState(
+        () => _errorMessage = "Firebase error: ${e.code} - ${e.message}",
+      );
+    } catch (e) {
+      setState(() => _errorMessage = "Unexpected error: $e");
     }
-
-    if (_emailController.text == "test@example.com") {
-      setState(() => _errorMessage = "Email is already being used");
-      return;
-    }
-
-    final newUser = UserModel(
-      username: _usernameController.text,
-      email: _emailController.text,
-      password: _passwordController.text,
-      profilePicName: _profilePictures[_selectedProfilePic].split('/').last,
-    );
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("Registration successful!")));
-
-    Navigator.pushReplacementNamed(context, '/shop');
   }
 
   @override
