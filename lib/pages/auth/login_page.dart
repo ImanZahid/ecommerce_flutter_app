@@ -1,4 +1,9 @@
+import 'package:ecommerce_flutter_app/firebase/firebase_manager.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+//Because the login page needs to
+//change dynamically (e.g., showing error messages), it uses a StatefulWidget.
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -7,26 +12,47 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+//This holds the mutable state of the LoginPage, including
+//User inputs (email and password)
+//Error messages
+
 class _LoginPageState extends State<LoginPage> {
+  //These controllers are used to read the text
+  //entered by the user into the email and password fields.
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String? _errorMessage;
 
-  void _login() {
+  //login function
+  //   Clears any previous error.
+  // Validates that the fields are not empty.
+  // Checks if the email and password match hardcoded credentials (test@example.com, password123).
+  // Navigates to the /shop page if login is successful.
+  // Shows an error if login fails.
+  void _login() async {
     setState(() => _errorMessage = null);
 
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
       setState(() => _errorMessage = "All fields are required");
       return;
     }
 
-    if (_emailController.text != "test@example.com" ||
-        _passwordController.text != "password123") {
-      setState(() => _errorMessage = "Entered password is incorrect");
-      return;
-    }
+    try {
+      final firebase = FirebaseManager();
+      await firebase.initialize();
 
-    Navigator.pushReplacementNamed(context, '/shop');
+      await firebase.auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      Navigator.pushReplacementNamed(context, '/shop');
+    } on FirebaseAuthException catch (e) {
+      setState(() => _errorMessage = "Login failed: ${e.message}");
+    }
   }
 
   @override
@@ -36,8 +62,10 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  //builds the UI of the login page
   @override
   Widget build(BuildContext context) {
+    //Provides the basic page structure (background color, etc.).
     return Scaffold(
       backgroundColor: const Color(0xFFF8F0FF),
       body: Center(
