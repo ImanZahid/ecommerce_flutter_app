@@ -1,4 +1,5 @@
 import 'package:ecommerce_flutter_app/firebase/firebase_manager.dart';
+import 'package:ecommerce_flutter_app/sqlite/sqlite_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_flutter_app/pages/shopping/dress_shop_page.dart';
 import 'package:ecommerce_flutter_app/pages/auth/register_page.dart';
@@ -7,6 +8,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await FirebaseManager().initialize();
+
+
+  try {
+    print("Seeding database...");
+    await DatabaseHelper().seedInitialData();
+    print("Seeding complete.");
+  } catch (e) {
+    print("Error while seeding DB: $e");
+  }
 
   runApp(const DressShopApp());
 }

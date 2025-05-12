@@ -5,6 +5,7 @@ import 'package:ecommerce_flutter_app/firebase/firebase_manager.dart';
 import 'package:ecommerce_flutter_app/pages/shopping/dress_detail_page.dart';
 import 'package:ecommerce_flutter_app/pages/shopping/cart_page.dart'; // <-- make sure this import exists
 import 'package:flutter/material.dart';
+import 'package:ecommerce_flutter_app/sqlite/sqlite_manager.dart';
 
 class DressShopPage extends StatefulWidget {
   const DressShopPage({super.key});
@@ -14,6 +15,7 @@ class DressShopPage extends StatefulWidget {
 }
 
 class _DressShopPageState extends State<DressShopPage> {
+  //int currentIndex = 0;
   Map<int, bool> hoverStates = {};
   List<DressModel> cart = [];
   bool showOnlySkirts = false;
@@ -57,11 +59,15 @@ class _DressShopPageState extends State<DressShopPage> {
   void filterItems() {
     setState(() {
       if (showOnlySkirts) {
-        // Show only items with "Skirt" in their name
-        displayItems =
-            dresses
-                .where((dress) => dress.name.toLowerCase().contains('skirt'))
-                .toList();
+        try {
+          DatabaseHelper().getAllDressNames().then((dressesFromDb) {
+            displayItems = dresses.where((dress) {
+              return dressesFromDb.contains(dress.name);
+            }).toList();
+          });
+        } catch (e) {
+          print("Error while accessing the database: $e");
+        }
       } else {
         displayItems = dresses;
       }
@@ -287,13 +293,13 @@ class _DressShopPageState extends State<DressShopPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  showOnlySkirts ? "Showing only skirts" : "Showing all items",
+                  showOnlySkirts ? "Showing only designer items" : "Showing all items",
                 ),
                 duration: const Duration(seconds: 1),
               ),
             );
           },
-          tooltip: 'Filter Skirts',
+          tooltip: 'Filter Designer Items',
         ),
         title: const Text(
           "Dress Shop",
@@ -568,19 +574,23 @@ class _DressShopPageState extends State<DressShopPage> {
                   ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      /*bottomNavigationBar: BottomNavigationBar(
+        backgroundColor:  Colors.black,
+        selectedItemColor: Colors.amber,
+        unselectedItemColor: Colors.white70,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),/*
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: 'Profile',
-          ),
+          ),*/
         ],
-        currentIndex: 0,
+        currentIndex: currentIndex,
         onTap: (index) {
+          currentIndex = index;
         },
-      ),
+      ),*/
     );
   }
 

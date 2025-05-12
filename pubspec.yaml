@@ -15,6 +15,8 @@ dependencies:
   firebase_auth_web: ^5.14.1  # Latest stable version
   cloud_firestore_web: ^4.4.5  # Latest stable version
   js: ^0.7.2  # Latest stable version
+  sqflite: ^2.3.0
+  path: ^1.8.0
   
 dev_dependencies:
   flutter_test:
