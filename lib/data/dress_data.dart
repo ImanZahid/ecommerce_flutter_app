@@ -1,6 +1,5 @@
 
 import 'package:ecommerce_flutter_app/domain/shopping/dress_model.dart';
-import 'package:flutter/material.dart';
 
 final List<DressModel> dressdata = [
   DressModel(name: "Bouquet Dress", image: "assets/images/dress1.png", price: 39.99, quantity: 1,

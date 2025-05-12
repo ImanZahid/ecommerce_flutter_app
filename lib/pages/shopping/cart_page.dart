@@ -1,6 +1,7 @@
 // pages/shopping/cart_page.dart
 import 'package:ecommerce_flutter_app/domain/shopping/dress_model.dart';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class CartPage extends StatefulWidget {
   /// List that comes from the shop; may contain duplicates
@@ -20,6 +21,17 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  void _playSound() async {
+    try {
+      // Load and play the sound file
+      await _audioPlayer.play(AssetSource('assets/images/success.mp3'));
+    } catch (e) {
+      print("Error playing sound: $e");
+    }
+  }
+
   /// key => quantity for each product-color variant
   late Map<String, int> _qty;
 
@@ -114,7 +126,6 @@ class _CartPageState extends State<CartPage> {
                       final item     = _itemByKey[k]!;
                       final qty      = _qty[k]!;
                       final lineTot  = item.price * qty;
-
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
@@ -208,6 +219,7 @@ class _CartPageState extends State<CartPage> {
                 ElevatedButton(
                   child: const Text("Buy"),
                   onPressed: () {
+                    _playSound(); // Play sound
                     _clearCart();
                     showDialog(
                       context: context,
