@@ -40,15 +40,14 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     try {
-      final firebase = FirebaseManager();
-      await firebase.initialize();
 
-      final userCredential = await firebase.auth.createUserWithEmailAndPassword(
+      final userCredential = await FirebaseManager().auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      print(userCredential);
 
-      await firebase.firestore
+      await FirebaseManager().firestore
           .collection("users")
           .doc(userCredential.user!.uid)
           .set({

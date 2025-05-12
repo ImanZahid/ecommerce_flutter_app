@@ -41,10 +41,8 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
-      final firebase = FirebaseManager();
-      await firebase.initialize();
 
-      await firebase.auth.signInWithEmailAndPassword(
+      await FirebaseManager().auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
