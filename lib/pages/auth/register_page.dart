@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_flutter_app/domain/user/user_model.dart';
 import 'package:ecommerce_flutter_app/firebase/firebase_manager.dart';
+import 'package:ecommerce_flutter_app/domain/repositories/user_repository.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,6 +16,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final UserRepository _userRepository = UserRepository(firebaseFirestore: FirebaseManager().firestore);
   String? _errorMessage;
   int _selectedProfilePic = 0;
 
@@ -46,15 +48,13 @@ class _RegisterPageState extends State<RegisterPage> {
         password: password,
       );
 
-      await FirebaseManager().firestore
-          .collection("users")
-          .doc(userCredential.user!.uid)
-          .set({
-            "username": username,
-            "email": email,
-            "profilePicName":
-                _profilePictures[_selectedProfilePic].split('/').last,
-          });
+      final userModel = UserModel(username: username,
+       email: email, 
+       password: username, 
+       profilePicName:  _profilePictures[_selectedProfilePic].split('/').last);
+
+      //Iman please use this. Add any new methods you want to in the repo, and do the insertion/get logic there <3 
+       await _userRepository.createUserWithAuthUuid(userCredential.user!.uid, userModel);
 
       ScaffoldMessenger.of(
         context,

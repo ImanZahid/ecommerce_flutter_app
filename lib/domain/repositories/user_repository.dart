@@ -25,5 +25,9 @@ class UserRepository {
     Object userObject = user.toMap();
     await firebaseFirestore.collection('users').add(userObject as Map<String, dynamic>);
   }
-  
+
+  Future<void> createUserWithAuthUuid(String uuid, UserModel user) async {
+    Object userObject = user.toMap();
+    await firebaseFirestore.collection('users').doc(uuid).set(userObject as Map<String, dynamic>);
+  }
 }
