@@ -16,7 +16,7 @@ class DressShopPage extends StatefulWidget {
 class _DressShopPageState extends State<DressShopPage> {
   Map<int, bool> hoverStates = {};
   List<DressModel> cart = [];
-  bool showOnlySkirts = false; 
+  bool showOnlySkirts = false;
   bool isLoading = true;
 
   List<DressModel> dresses = [];
@@ -67,6 +67,207 @@ class _DressShopPageState extends State<DressShopPage> {
       }
     });
   }
+
+  void openDetailPage(DressModel dress) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DressDetailPage(
+          dress: dress,
+          onAddToCart: addToCart,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLuxuryDress(DressModel dress, VoidCallback onTap, VoidCallback onAddToCart) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Card(
+      color: const Color(0xFFFBE7C6),
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(color: Colors.amber, width: 3),
+      ),
+      shadowColor: Colors.amberAccent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Hero(
+              tag: dress.name,
+              child: dress.image.isNotEmpty
+                  ? ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        dress.getColors().first,
+                        BlendMode.modulate,
+                      ),
+                      child: Image.asset(
+                        dress.image,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                      ),
+                    )
+                  : Container(
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: Icon(Icons.image, size: 50, color: Colors.grey),
+                      ),
+                    ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(dress.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                Text('\$${dress.price}',
+                    style: const TextStyle(color: Colors.black87, fontSize: 16)),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.add_shopping_cart, color: Colors.deepOrange),
+                      onPressed: onAddToCart,
+                    ),
+                    const Text("Buy Now",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.deepOrange)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+  Widget _buildStealDress(DressModel dress, VoidCallback onTap, VoidCallback onAddToCart) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Card(
+      color: const Color(0xFFFFE5E5),
+      elevation: 6,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: const BorderSide(color: Colors.redAccent, width: 2),
+      ),
+      shadowColor: Colors.redAccent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Hero(
+              tag: dress.name,
+              child: dress.image.isNotEmpty
+                  ? ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        dress.getColors().first,
+                        BlendMode.modulate,
+                      ),
+                      child: Image.asset(
+                        dress.image,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                      ),
+                    )
+                  : Container(
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: Icon(Icons.image, size: 50, color: Colors.grey),
+                      ),
+                    ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(dress.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text('\$${dress.price}',
+                    style: const TextStyle(color: Colors.red, fontSize: 15)),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.add_shopping_cart, color: Colors.red),
+                      onPressed: onAddToCart,
+                    ),
+                    const Text("Buy Now",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.redAccent)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+  }
+
+
+  Widget _buildNormalDress(DressModel dress, VoidCallback onTap, VoidCallback onAddToCart) {
+    return GestureDetector(
+    onTap: onTap,
+    child: Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Hero(
+              tag: dress.name,
+              child: dress.image.isNotEmpty
+                  ? ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        dress.getColors().first,
+                        BlendMode.modulate,
+                      ),
+                      child: Image.asset(
+                        dress.image,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                      ),
+                    )
+                  : Container(
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: Icon(Icons.image, size: 50, color: Colors.grey),
+                      ),
+                    ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(dress.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text('\$${dress.price}', style: const TextStyle(color: Colors.grey)),
+                Row(
+                  children: [
+                    IconButton(icon: const Icon(Icons.add_shopping_cart), onPressed: onAddToCart),
+                    const Text("Buy Now", style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +401,40 @@ class _DressShopPageState extends State<DressShopPage> {
                           mainAxisSpacing: 16,
                           childAspectRatio: 0.8,
                         ),
-                    itemBuilder: (context, index) {
+                        itemBuilder: (context, index) {
+                          final dress = displayItems[index];
+                          Widget buildDressCard() {
+                            if (dress.price >= 100) {
+                              return _buildLuxuryDress(
+                                dress,
+                                () => openDetailPage(dress),
+                                () => addToCart(dress),
+                              );
+                            } else if (dress.price <= 25) {
+                              return _buildStealDress(
+                                dress,
+                                () => openDetailPage(dress),
+                                () => addToCart(dress),
+                              );
+                            } else {
+                              return _buildNormalDress(
+                                dress,
+                                () => openDetailPage(dress),
+                                () => addToCart(dress),
+                              );
+                            }
+                          }
+                          return MouseRegion(
+                            onEnter: (_) => onHover(index, true),
+                            onExit: (_) => onHover(index, false),
+                            child: AnimatedScale(
+                              duration: const Duration(milliseconds: 200),
+                              scale: hoverStates[index] == true ? 1.01 : 1.0,
+                              child: buildDressCard(),
+                            ),
+                          );
+                        }
+                    /*itemBuilder: (context, index) {
                       final dress = displayItems[index];
                       return GestureDetector(
                         onTap: () {
@@ -330,7 +564,7 @@ class _DressShopPageState extends State<DressShopPage> {
                           ),
                         ),
                       );
-                    },
+                    },*/
                   ),
         ),
       ),
