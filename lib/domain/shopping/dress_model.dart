@@ -8,9 +8,10 @@ class DressModel {
   final String name;
   final double price;
   final String image;
-  final List<Color> colors;
+  final List<int> colors;
   int quantity;
   final int selectedColorIndex;
+  List<Color> actualColors = List.empty();
 
   DressModel({
     required this.name,
@@ -21,14 +22,18 @@ class DressModel {
     this.selectedColorIndex = 0,
   });
 
+  List<Color> getColors() {
+    actualColors = actualColors.isEmpty ? List<Color>.from((colors).map<Color>((x) => Color(x))): actualColors;
+    return actualColors;
+  }
+
   factory DressModel.fromMap(Map<String, dynamic> map) {
     return DressModel(
-      name: map['name'] as String,
-      price: map['price'] as double,
-      image: map['image'] as String,
-      colors: List<Color>.from((map['colors'] as List<int>).map<Color>((x) => Color(x),),),
-      quantity: map['quantity'] as int,
-      selectedColorIndex: map['selectedColorIndex'] as int,
+      name: map['name']! as String,
+      price: map['price']! as double,
+      image: map['image']! as String,
+      colors: List<int>.from(map['colors']!),
+      quantity: map['quantity']! as int,
     );
   }
 
@@ -36,7 +41,7 @@ class DressModel {
     String? name,
     double? price,
     String? image,
-    List<Color>? colors,
+    List<int>? colors,
     int? quantity,
     int? selectedColorIndex,
   }) {
@@ -55,9 +60,8 @@ class DressModel {
       'name': name,
       'price': price,
       'image': image,
-      'colors': colors.map((x) => x.value).toList(),
+      'colors': colors,
       'quantity': quantity,
-      'selectedColorIndex': selectedColorIndex,
     };
   }
 

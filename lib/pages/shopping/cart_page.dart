@@ -152,7 +152,7 @@ class _CartPageState extends State<CartPage> {
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: item
-                                          .colors[item.selectedColorIndex],
+                                          .getColors()[item.selectedColorIndex],
                                       border: Border.all(color: Colors.black),
                                     ),
                                   ),

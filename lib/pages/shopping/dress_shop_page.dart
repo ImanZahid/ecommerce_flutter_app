@@ -1,29 +1,48 @@
+import 'package:ecommerce_flutter_app/domain/repositories/dress_repository.dart';
 import 'package:ecommerce_flutter_app/domain/shopping/dress_model.dart';
 import 'package:ecommerce_flutter_app/data/dress_data.dart';
+import 'package:ecommerce_flutter_app/firebase/firebase_manager.dart';
 import 'package:ecommerce_flutter_app/pages/shopping/dress_detail_page.dart';
 import 'package:ecommerce_flutter_app/pages/shopping/cart_page.dart'; // <-- make sure this import exists
 import 'package:flutter/material.dart';
 
 class DressShopPage extends StatefulWidget {
-  DressShopPage({super.key});
-  final List<DressModel> dresses = dressdata;
+  const DressShopPage({super.key});
 
   @override
-  _DressShopPageState createState() => _DressShopPageState();
+  State<DressShopPage> createState() => _DressShopPageState();
 }
 
 class _DressShopPageState extends State<DressShopPage> {
   Map<int, bool> hoverStates = {};
   List<DressModel> cart = [];
   bool showOnlySkirts = false; 
+  bool isLoading = true;
 
-  late List<DressModel> displayItems;
+  List<DressModel> dresses = [];
+  List<DressModel> displayItems = [];
+  final DressRepository _dressRepository = DressRepository(firebaseFirestore: FirebaseManager().firestore);
 
   @override
   void initState() {
     super.initState();
-    // Initialize with all items
-    displayItems = widget.dresses;
+    //check if we have dress data in the database, otherwise populate it first
+    fetchDresses();
+  }
+
+  Future<void> fetchDresses() async {
+    List<DressModel> dressStock = await _dressRepository.getDresses();
+    if (dressStock.isEmpty) {
+        //update database with the stock
+        await _dressRepository.updateStock(dressdata);
+        //assign the dressdata stock
+        dressStock = dressdata;
+    }
+    setState(() {
+      isLoading = false;
+      dresses = dressStock;
+      displayItems = dresses;
+    });
   }
 
   void addToCart(DressModel dress) {
@@ -40,12 +59,11 @@ class _DressShopPageState extends State<DressShopPage> {
       if (showOnlySkirts) {
         // Show only items with "Skirt" in their name
         displayItems =
-            widget.dresses
+            dresses
                 .where((dress) => dress.name.toLowerCase().contains('skirt'))
                 .toList();
       } else {
-        
-        displayItems = widget.dresses;
+        displayItems = dresses;
       }
     });
   }
@@ -128,7 +146,7 @@ class _DressShopPageState extends State<DressShopPage> {
           ),
         ],
       ),
-      body: Container(
+      body: isLoading? Center(child: CircularProgressIndicator()): Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -224,7 +242,7 @@ class _DressShopPageState extends State<DressShopPage> {
                                             dress.image.isNotEmpty
                                                 ? ColorFiltered(
                                                   colorFilter: ColorFilter.mode(
-                                                    dress.colors.first,
+                                                    dress.getColors().first,
                                                     BlendMode.modulate,
                                                   ),
                                                   child: Image.asset(

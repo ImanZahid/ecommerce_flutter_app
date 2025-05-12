@@ -25,7 +25,7 @@ class _DressDetailPageState extends State<DressDetailPage> {
   @override
   void initState() {
     super.initState();
-    colorOptions = widget.dress.colors;
+    colorOptions = widget.dress.getColors();
     }
 
   void submitRating() {
