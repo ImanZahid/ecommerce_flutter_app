@@ -6,6 +6,7 @@ import 'package:ecommerce_flutter_app/pages/shopping/dress_detail_page.dart';
 import 'package:ecommerce_flutter_app/pages/shopping/cart_page.dart'; // <-- make sure this import exists
 import 'package:flutter/material.dart';
 import 'package:ecommerce_flutter_app/sqlite/sqlite_manager.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DressShopPage extends StatefulWidget {
   const DressShopPage({super.key});
@@ -129,7 +130,10 @@ class _DressShopPageState extends State<DressShopPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(dress.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                style: GoogleFonts.lato(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18
+                ),),
                 Text('\$${dress.price}',
                     style: const TextStyle(color: Colors.black87, fontSize: 16)),
                 Row(
@@ -195,7 +199,10 @@ class _DressShopPageState extends State<DressShopPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(dress.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    style: GoogleFonts.lato(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18
+                ),),
                 Text('\$${dress.price}',
                     style: const TextStyle(color: Colors.red, fontSize: 15)),
                 Row(
@@ -256,7 +263,10 @@ class _DressShopPageState extends State<DressShopPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(dress.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(dress.name, style: GoogleFonts.lato(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18
+                ),),
                 Text('\$${dress.price}', style: const TextStyle(color: Colors.grey)),
                 Row(
                   children: [
