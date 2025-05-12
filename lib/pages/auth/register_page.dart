@@ -45,7 +45,6 @@ class _RegisterPageState extends State<RegisterPage> {
         email: email,
         password: password,
       );
-      print(userCredential);
 
       await FirebaseManager().firestore
           .collection("users")
