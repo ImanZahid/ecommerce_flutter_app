@@ -10,6 +10,8 @@ import 'package:ecommerce_flutter_app/sqlite/sqlite_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';  
 import 'package:http/http.dart' as http;  
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 
 class DressShopPage extends StatefulWidget {
@@ -57,41 +59,35 @@ class _DressShopPageState extends State<DressShopPage> {
     });
   }
 
-  Future<void> _doGetPost() async {
+Future<void> _doGetPost() async {
   try {
-    // 1) GET a single post
-    final getRes = await http.get(
-      Uri.parse('https://jsonplaceholder.typicode.com/posts/1')
-    );
-    final getData = jsonDecode(getRes.body);
-    final title = getData['title'] as String;
+    final fb = FirebaseManager().firestore;
 
-    // 2) POST it back (echo)
-    final postRes = await http.post(
-      Uri.parse('https://jsonplaceholder.typicode.com/posts'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'title': title,
-        'body': 'Test body',
-        'userId': 1,
-      }),
-    );
-    final postData = jsonDecode(postRes.body);
+    // ─── GET: Count how many dresses are in your 'dresses' collection
+    final dressSnap = await fb.collection('dresses').get();
+    final count = dressSnap.docs.length;
 
-    // 3) Store results
+    // ─── POST: Create a dummy order in 'orders'
+    final orderRef = await fb.collection('orders').add({
+      'items': dressSnap.docs.map((doc) => doc.data()['name']).toList(),
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    // ─── Store results so the UI can show them
     setState(() {
-      _getResult  = title;
-      _postResult = postData['id'].toString();
+      _getResult  = 'You have $count dresses in Firestore.';
+      _postResult = 'Created order ID: ${orderRef.id}';
       _gpLoading  = false;
     });
-  } catch (_) {
+  } catch (e) {
     setState(() {
-      _getResult  = 'Error';
-      _postResult = 'Error';
+      _getResult  = 'GET error';
+      _postResult = 'POST error';
       _gpLoading  = false;
     });
   }
 }
+
 
 
   void addToCart(DressModel dress) {
