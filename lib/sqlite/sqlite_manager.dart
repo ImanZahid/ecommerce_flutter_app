@@ -1,5 +1,10 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart' if (dart.library.io) 'package:sqflite/sqflite.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+
+
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -8,6 +13,17 @@ class DatabaseHelper {
   factory DatabaseHelper() => _instance;
 
   DatabaseHelper._internal();
+
+  DatabaseFactory getDatabaseFactory() {
+    if (kIsWeb) {
+      throw UnsupportedError('Web not supported');
+    } if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      sqfliteFfiInit();
+      return databaseFactoryFfi;
+    } else {
+      return databaseFactory; // mobile
+    }
+  }
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -18,6 +34,8 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'dresses.db');
+
+    final factory = getDatabaseFactory();
 
     return await openDatabase(
       path,

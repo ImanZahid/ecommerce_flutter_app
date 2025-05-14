@@ -26,7 +26,7 @@ class _CartPageState extends State<CartPage> {
   void _playSound() async {
     try {
       // Load and play the sound file
-      await _audioPlayer.play(AssetSource('assets/images/success.mp3'));
+      await _audioPlayer.play(AssetSource('images/cashsound.mp3'));
     } catch (e) {
       print("Error playing sound: $e");
     }

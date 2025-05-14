@@ -99,7 +99,27 @@ Future<void> _doGetPost() async {
     ).showSnackBar(SnackBar(content: Text("${dress.name} added to cart!")));
   }
 
-  void filterItems() {
+  void filterItems() async {
+  if (showOnlySkirts) {
+    try {
+      List<String> dressesFromDb = await DatabaseHelper().getAllDressNames();
+      setState(() {
+        displayItems = dresses.where((dress) {
+          return dressesFromDb.contains(dress.name);
+        }).toList();
+      });
+    } catch (e) {
+      print("Error while accessing the database: $e");
+    }
+  } else {
+    setState(() {
+      displayItems = dresses;
+    });
+  }
+}
+
+
+  /*void filterItems() {
     setState(() {
       if (showOnlySkirts) {
         try {
@@ -115,7 +135,7 @@ Future<void> _doGetPost() async {
         displayItems = dresses;
       }
     });
-  }
+  }*/
 
   void openDetailPage(DressModel dress) {
     Navigator.push(
