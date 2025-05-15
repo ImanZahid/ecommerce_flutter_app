@@ -1,5 +1,7 @@
 import 'package:ecommerce_flutter_app/data/rating_data.dart';
+import 'package:ecommerce_flutter_app/domain/repositories/dress_rating_repository.dart';
 import 'package:ecommerce_flutter_app/domain/shopping/dress_model.dart';
+import 'package:ecommerce_flutter_app/firebase/firebase_manager.dart';
 import 'package:ecommerce_flutter_app/domain/shopping/rating_model.dart';
 import 'package:flutter/material.dart';
 
@@ -18,20 +20,40 @@ class DressDetailPage extends StatefulWidget {
 }
 class _DressDetailPageState extends State<DressDetailPage> {
   late final List<Color> colorOptions;
+  late final List<RatingModel> ratingsData;
+  final DressRatingRepository _ratingRepository = DressRatingRepository(firebaseFirestore: FirebaseManager().firestore);
   int selectedColorIndex = 0;
+  bool isLoading = true;
   String commentText = '';
   double selectedStar = 0;
 
   @override
   void initState() {
     super.initState();
+
+    //get dressing ratings
+    fetchDressRatings();
     colorOptions = widget.dress.getColors();
+  }
+
+  Future<void> fetchDressRatings() async {
+    List<RatingModel> ratingsToFetch = await _ratingRepository.getDressRatings();
+    if (ratingsToFetch.isEmpty) {
+        //update database with the stock
+        await _ratingRepository.createDressRatings(ratings);
+        //assign the dressdata stock
+        ratingsData = ratings;
     }
+    setState(() {
+      isLoading = false;
+      ratingsData = ratingsToFetch;
+    });
+  }
 
   void submitRating() {
     if (selectedStar > 0 && commentText.isNotEmpty) {
       setState(() {
-        ratings.add(RatingModel(
+        ratingsData.add(RatingModel(
           userId: "TEMP_4561", //
           //GRAB THE NAME FROM THE DRESS TABLE
           dressId: widget.dress.name,
@@ -79,7 +101,7 @@ class _DressDetailPageState extends State<DressDetailPage> {
     );
   }
   Widget _buildCommentsList() {
-    final dressRatings = ratings.where((r) => r.dressId == widget.dress.name).toList();
+    final dressRatings = ratingsData.where((r) => r.dressId == widget.dress.name).toList();
     return Column(
       children: dressRatings.map((r) => Card(
         child: ListTile(
@@ -98,9 +120,12 @@ class _DressDetailPageState extends State<DressDetailPage> {
   }
   @override
   Widget build(BuildContext context) {
+    if (isLoading) { //perfect
+       return const Center(child: CircularProgressIndicator());
+    }
     final screenWidth = MediaQuery.of(context).size.width;
     //GRAB THE NAME FROM THE DRESS TABLE
-    final dressRatings = ratings.where((r) => r.dressId == widget.dress.name).toList();
+    final dressRatings = ratingsData.where((r) => r.dressId == widget.dress.name).toList();
     final double avgRating = dressRatings.isEmpty
         ? 0
         : dressRatings.map((r) => r.star).reduce((a, b) => a + b) / dressRatings.length;
@@ -112,7 +137,7 @@ class _DressDetailPageState extends State<DressDetailPage> {
         backgroundColor: const Color.fromARGB(255, 110, 15, 47),
         elevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: isLoading? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

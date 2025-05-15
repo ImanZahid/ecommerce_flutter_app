@@ -17,13 +17,17 @@ class DressRatingRepository {
   Future<void> createDressRating(RatingModel dressRating) async {
     Object dressRatingObject = dressRating.toMap();
     await firebaseFirestore.collection('dressRatings').add(dressRatingObject as Map<String, dynamic>);
+  }
 
+   Future<void> createDressRatings(List<RatingModel> dressRatings) async {
+    for(int i=0; i< dressRatings.length; i++) {
+      await createDressRating(dressRatings[i]);
+    }
   }
 
   Future<List<RatingModel>> getDressRatings () async {
     final QuerySnapshot<Map<String, dynamic>> ratings = await firebaseFirestore.collection('dressRatings').get();
-    return ratings.docs.map((doc) => {
-      RatingModel.fromMap(doc.data())
-    }).toList() as List<RatingModel>;
+    List<RatingModel> dressRatings = ratings.docs.map((doc) => RatingModel.fromMap(doc.data())).toList();
+    return dressRatings;
   }
 }
