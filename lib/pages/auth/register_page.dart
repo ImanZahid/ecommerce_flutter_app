@@ -55,6 +55,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
       //Iman please use this. Add any new methods you want to in the repo, and do the insertion/get logic there <3 
        await _userRepository.createUserWithAuthUuid(userCredential.user!.uid, userModel);
+       
+       //update displayName
+       await userCredential.user?.updateDisplayName(username);
 
       ScaffoldMessenger.of(
         context,

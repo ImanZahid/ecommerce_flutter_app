@@ -1,8 +1,10 @@
 import 'package:ecommerce_flutter_app/data/rating_data.dart';
 import 'package:ecommerce_flutter_app/domain/repositories/dress_rating_repository.dart';
 import 'package:ecommerce_flutter_app/domain/shopping/dress_model.dart';
+import 'package:ecommerce_flutter_app/domain/user/user_model.dart';
 import 'package:ecommerce_flutter_app/firebase/firebase_manager.dart';
 import 'package:ecommerce_flutter_app/domain/shopping/rating_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class DressDetailPage extends StatefulWidget {
@@ -26,6 +28,9 @@ class _DressDetailPageState extends State<DressDetailPage> {
   bool isLoading = true;
   String commentText = '';
   double selectedStar = 0;
+  final String TEMP_USER = "TEMP_USER";
+  late User? currentUser = FirebaseManager().auth.currentUser;
+  late List<UserModel> ratingUsers = [];
 
   @override
   void initState() {
@@ -39,7 +44,7 @@ class _DressDetailPageState extends State<DressDetailPage> {
   Future<void> fetchDressRatings() async {
     List<RatingModel> ratingsToFetch = await _ratingRepository.getDressRatings();
     if (ratingsToFetch.isEmpty) {
-        //update database with the stock
+        //update database with the stock2
         await _ratingRepository.createDressRatings(ratings);
         //assign the dressdata stock
         ratingsData = ratings;
@@ -52,14 +57,15 @@ class _DressDetailPageState extends State<DressDetailPage> {
 
   void submitRating() {
     if (selectedStar > 0 && commentText.isNotEmpty) {
-      setState(() {
-        ratingsData.add(RatingModel(
-          userId: "TEMP_4561", //
+      setState(() async {
+        RatingModel ratingModel = RatingModel(
+          userId: FirebaseManager().auth.currentUser?.uid ?? TEMP_USER, //
           //GRAB THE NAME FROM THE DRESS TABLE
           dressId: widget.dress.name,
           star: selectedStar,
           comment: commentText,
-        ));
+        );
+        await _ratingRepository.createDressRating(ratingModel);
         selectedStar = 0;
         commentText = '';
       });
