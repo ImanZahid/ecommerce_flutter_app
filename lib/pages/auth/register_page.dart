@@ -50,7 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
       final userModel = UserModel(username: username,
        email: email, 
-       password: username, 
+       password: password, 
        profilePicName:  _profilePictures[_selectedProfilePic].split('/').last);
 
       //Iman please use this. Add any new methods you want to in the repo, and do the insertion/get logic there <3 
