@@ -24,6 +24,7 @@ class _DressDetailPageState extends State<DressDetailPage> {
   late final List<Color> colorOptions;
   late final List<RatingModel> ratingsData;
   final DressRatingRepository _ratingRepository = DressRatingRepository(firebaseFirestore: FirebaseManager().firestore);
+  late TextEditingController _commentController;
   int selectedColorIndex = 0;
   bool isLoading = true;
   String commentText = '';
@@ -39,6 +40,7 @@ class _DressDetailPageState extends State<DressDetailPage> {
     //get dressing ratings
     fetchDressRatings();
     colorOptions = widget.dress.getColors();
+    _commentController = TextEditingController(text: commentText);
   }
 
   Future<void> fetchDressRatings() async {
@@ -309,7 +311,7 @@ class _DressDetailPageState extends State<DressDetailPage> {
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (val) => setState(() => commentText = val),
-                controller: TextEditingController(text: commentText),
+                controller: _commentController,
               ),
             ),
             Padding(
