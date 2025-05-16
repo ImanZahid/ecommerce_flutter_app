@@ -57,19 +57,21 @@ class _DressDetailPageState extends State<DressDetailPage> {
     });
   }
 
-  void submitRating() {
+  void submitRating() async {
     if (selectedStar > 0 && commentText.isNotEmpty) {
-      setState(() async {
-        RatingModel ratingModel = RatingModel(
+       RatingModel ratingModel = RatingModel(
           userId: FirebaseManager().auth.currentUser?.uid ?? TEMP_USER, //
           //GRAB THE NAME FROM THE DRESS TABLE
           dressId: widget.dress.name,
           star: selectedStar,
           comment: commentText,
         );
-        await _ratingRepository.createDressRating(ratingModel);
+      await _ratingRepository.createDressRating(ratingModel);
+      setState(()  {
+        ratingsData.add(ratingModel);
         selectedStar = 0;
         commentText = '';
+        _commentController.clear();
       });
     }
   }
